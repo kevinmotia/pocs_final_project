@@ -11,8 +11,6 @@ from nltk.tokenize import word_tokenize
 import string
 from geotext import GeoText
 
-# There are still some URLs in the tweets since we were looking for URLs that started with https, not http. 
-
 # Read in files to dataFrames
 tweets_df = pd.read_csv('originalTweets.csv')#, dtype={'sentiment':str, 'id':str, 'date':str, 'text':str})
 
@@ -41,9 +39,6 @@ for entry in tweets_df['text']:
 
 
 
-
-
-
 print(type(initial_tweets[0]))
 print(initial_tweets[0:20])
 
@@ -68,13 +63,10 @@ tweets_df['text'] = cleaned_tweet_list
 
 
 details = {'sentiment' : sentiment_list, 'id' : id_list, 'date' : date_list, 'text' : cleaned_tweet_list}
-  
 df_cleaned = pd.DataFrame(details, columns = ['sentiment', 'id', 'date', 'text'])
 
 df_tweetsWithNames = pd.DataFrame(columns = ['sentiment', 'id', 'date', 'text'])
 
-
-#df_cleaned = pd.DataFrame(columns=['sentiment', 'id', 'date', 'text'])                  # initialize df_tweetsWithNames 
 
 
 for tweetIndex in range(len(df_cleaned)):
