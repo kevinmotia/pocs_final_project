@@ -61,39 +61,7 @@ for tweet in tweet_list:                                              # for each
 tweet_dic = {'sentiment':sentiment_list, 'id':id_list, 'date':created_at_list, 'text':cleaned_tweet_list} # changed to text_list from clean_tweet_list
 df_tweets = pd.DataFrame(tweet_dic, columns = ['sentiment','id','date','text'])
 
-
-
-
-# tweets_with_mentions = []
-# for tweet in cleaned_tweet_list:
-#     places = GeoText(tweet, aggressive = True).country_mentions         # get the regions mentioned
-    
-##     region_list = list(places.keys())    #needs double comments because it has the word region in it so pylance is being weird
-#  #   print(region_list)
-#     for entry in region_list:
-#         if 'Europe' in entry:
-#             tweets_with_mentions.append(tweet)
-#         if 'Latin America' in entry:
-#             tweets_with_mentions.append(tweet)
-#         if 'North America' in entry:
-#             tweets_with_mentions.append(tweet)
-#         if 'Indian Subcontinent' in entry:
-#             tweets_with_mentions.append(tweet)
-#         if 'Sub-Saharan Africa' in entry:
-#             tweets_with_mentions.append(tweet)
-#         if 'MENA' in entry:
-#             tweets_with_mentions.append(tweet)
-#         if 'East Asia' in entry:
-#             tweets_with_mentions.append(tweet)
-#         if 'Central Asia' in entry:
-#             tweets_with_mentions.append(tweet)
-#         if 'Pacific' in entry:
-#             tweets_with_mentions.append(tweet)
-# #print(tweets_with_mentions)
-
 df_tweetsWithNames = pd.DataFrame(columns=['sentiment', 'id', 'date', 'text'])                  # initialize df_tweetsWithNames 
-
-
 
 for tweetIndex in range(len(df_tweets)):
     places = GeoText(df_tweets['text'][tweetIndex], aggressive = True).country_mentions         # get the regions mentioned
@@ -127,61 +95,3 @@ df_tweetsWithNames = df_tweetsWithNames.sort_values('id')                       
 df_tweetsWithNames.to_csv('dec11Tweets.csv', index = False)                          # Writing df_tweetsWithNames to a csv
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-# # initialize dataframe filtered for tweets with country or region names mentioned
-# df_tweetsWithNames = pd.DataFrame(columns=['sentiment', 'id', 'date', 'text'])
-
-# for tweetIndex in range(len(df_tweets)):
-#     word_tokens = word_tokenize(df_tweets['text'][tweetIndex])      # tokenize tweet
-#     for token in word_tokens:               # for each token
-#         for name in globe_df['Country']:
-#             fuzzRatio = fuzz.token_set_ratio(token, name)
-#             if fuzzRatio >= .90:
-#                 df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])      
-
-
-
-# Sort Tweets by newest to oldest      (Oldest 1000 tweets as a train/test dataset. The rest will be our unevaluated data)
-# df_tweetsWithNames.sort_values('id')
-
-
-# # Convert df_tweetsWithNames to csv file
-# df_tweetsWithNames.to_csv('trainingTweetsWithNames.csv', index = False)
-
-
-
-
-
-
-
-
-
-
-
-#-------------------------------------------------------------------------------------------------------------------------------
-# Put lists in a dictionary
-# tweet_dic = {'sentiment':sentiment_list, 'id':id_list, 'date':created_at_list, 'text':tweetsWithNames} # changed to text_list from clean_tweet_list
-# # Convert dictionary to dataframe
-# df = pd.DataFrame(tweet_dic, columns = ['sentiment','id','date','text'])
-
-# print(df)
-# df.sort_values('id')                                                       # Sorting by id will also sort from newest to oldest
-# print('--------------------HelloThere!---------------------')
-# print(df)
-# df.to_csv('trainingTweetsHELLO.csv', index = False)  
-
-#-------------------------------------------------------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------------------------------------------------------
-# I have edited this file to not remove stopwords. You can replace the lines with the commented our ones to remove them once again if that's necessary.
