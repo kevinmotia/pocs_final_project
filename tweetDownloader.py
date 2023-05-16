@@ -14,9 +14,8 @@ import string
 import time
 #from fuzzywuzzy import fuzz    No longer used. Geotext replaces this. 
 from geotext import GeoText
-#-------------------------------------------------------------------------------------------------------------------------------
 
-#-------------------------------------------------------------------------------------------------------------------------------
+
 # Store bearer_token in variable
 bearer_token = "AAAAAAAAAAAAAAAAAAAAAHIxjgEAAAAAHBtpIV5008WAMdj3Hd2dapo%2BM6k%3DGfV9iH7qSwlBf8UQcODVI6DW0FaoIT6tfodr38XcVR018cGh6v" # can leave public, no longer used.
 client = tweepy.Client(bearer_token=bearer_token, wait_on_rate_limit=True)
@@ -28,9 +27,8 @@ start_time = '2012-03-05T00:00:00Z'
 end_time = '2022-12-05T00:00:00Z'
 tweets = tweepy.Paginator(client.search_all_tweets, query=query,
                               tweet_fields=['created_at'], start_time = start_time, end_time = end_time, max_results=100).flatten(limit=550000)
-#-------------------------------------------------------------------------------------------------------------------------------
 
-#-------------------------------------------------------------------------------------------------------------------------------
+
 # Append tweet information to lists
 sentiment_list = []
 id_list = []
@@ -41,57 +39,57 @@ for tweet in tweets:
     id_list.append(tweet.id)
     created_at_list.append(tweet.created_at)
     tweet_list.append(tweet.text)
-    time.sleep(.02) # changed from 1 to .5, .15 seemed to work too. .04 seems to work too. .03 seems to work.
+    time.sleep(.02) # used to deal with rate limit
 
+    
 # Save original tweets
 tweet_dic_original = {'sentiment':sentiment_list, 'id':id_list, 'date':created_at_list, 'text':tweet_list} # changed to text_list from clean_tweet_list
 df_tweets_original = pd.DataFrame(tweet_dic_original, columns = ['sentiment','id','date','text'])
 df_tweets_original.to_csv('originalTweets.csv', index = False)
+
 
 cleaned_tweet_list = []
 for tweet in tweet_list:                                              # for each tweet  
     tweet = tweet.lower()                                             # make it all lowercase
     temp = re.sub(r'http\S+', '', tweet)                              # take out URLs
     temp = re.sub(r'(@\S+) | (#\S+)', r'', temp)                      # take out @s and hashtags
-    temp = re.sub(r'https.*|(?![0-9À-ÿa-z\s]).','', temp)            # take out URLs
+    temp = re.sub(r'https.*|(?![0-9À-ÿa-z\s]).','', temp)             # take out URLs formatted in another way
     temp = re.sub(r'\s{2,}', ' ', temp)                               # clean up extra spaces
     cleaned_tweet_list.append(temp)                                  
 
+tweet_dic = {'sentiment':sentiment_list, 'id':id_list, 'date':created_at_list, 'text':cleaned_tweet_list} # fill a dictionary with clean tweets
+df_tweets = pd.DataFrame(tweet_dic, columns = ['sentiment','id','date','text'])                           # create a dataframe of the clean tweets
+df_tweetsWithNames = pd.DataFrame(columns=['sentiment', 'id', 'date', 'text'])                            # initialize dataframe that will be used to store only tweets that mention regions
 
-tweet_dic = {'sentiment':sentiment_list, 'id':id_list, 'date':created_at_list, 'text':cleaned_tweet_list} # changed to text_list from clean_tweet_list
-df_tweets = pd.DataFrame(tweet_dic, columns = ['sentiment','id','date','text'])
-
-df_tweetsWithNames = pd.DataFrame(columns=['sentiment', 'id', 'date', 'text'])                  # initialize df_tweetsWithNames 
 
 for tweetIndex in range(len(df_tweets)):
-    places = GeoText(df_tweets['text'][tweetIndex], aggressive = True).country_mentions         # get the regions mentioned
+    places = GeoText(df_tweets['text'][tweetIndex], aggressive = True).country_mentions                   # get the regions mentioned
 
     region_list = list(places.keys())
     #   print(region_list)
     for entry in region_list:
         if 'Europe' in entry:
-            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])         # Add tweetinfo of tweets with Europe mentions
+            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])                   # Add tweetinfo of tweets with Europe mentions
         if 'Latin America' in entry:
-            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])         # Add tweetinfo of tweets with Latin America mentions
+            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])                  # Add tweetinfo of tweets with Latin America mentions
         if 'North America' in entry:
-            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])         # Add tweetinfo of tweets with North America mentions
+            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])                  # Add tweetinfo of tweets with North America mentions
         if 'Indian Subcontinent' in entry:
-            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])         # Add tweetinfo of tweets with Indian Subcontinent mentions
+            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])                  # Add tweetinfo of tweets with Indian Subcontinent mentions
         if 'Sub-Saharan Africa' in entry:
-            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])         # Add tweetinfo of tweets with Sub-Saharan Africa mentions
+            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])                  # Add tweetinfo of tweets with Sub-Saharan Africa mentions
         if 'MENA' in entry:
-            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])         # Add tweetinfo of tweets with MENA mentions
+            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])                  # Add tweetinfo of tweets with MENA mentions
         if 'East Asia' in entry:
-            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])         # Add tweetinfo of tweets with East Asia mentions
+            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])                  # Add tweetinfo of tweets with East Asia mentions
         if 'Central Asia' in entry:
-            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])         # Add tweetinfo of tweets with Europe mentions
+            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])                  # Add tweetinfo of tweets with Europe mentions
         if 'Pacific' in entry:
-            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])         # Add tweetinfo of tweets with Pacific mentions
+            df_tweetsWithNames = df_tweetsWithNames.append(df_tweets.iloc[[tweetIndex]])                  # Add tweetinfo of tweets with Pacific mentions
 
-#df_tweetsWithNames = df_tweetsWithNames.reset_index()                                            # Reset df_tweetsWithNames index
-df_tweetsWithNames = df_tweetsWithNames.drop_duplicates()                                        # Drop duplicate entries
-df_tweetsWithNames = df_tweetsWithNames.sort_values('id')                                        # sort tweets from newest to oldest by using the id.... Larger value means newer
+df_tweetsWithNames = df_tweetsWithNames.drop_duplicates()                                                 # Drop duplicate entries
+df_tweetsWithNames = df_tweetsWithNames.sort_values('id')                                                 # sort tweets from newest to oldest by using the id.... Larger value means newer
 
-df_tweetsWithNames.to_csv('dec11Tweets.csv', index = False)                          # Writing df_tweetsWithNames to a csv
+df_tweetsWithNames.to_csv('dec11Tweets.csv', index = False)                                                # Writing df_tweetsWithNames to a csv
 
 
